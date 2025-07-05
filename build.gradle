@@ -1,0 +1,38 @@
+apply plugin: 'java'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //jakarta
+    compileOnly "jakarta.platform:jakarta.jakartaee-api:10.0.0"
+
+    //lombok
+    implementation group: 'org.projectlombok', name: 'lombok', version: "1.18.32"
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: "1.18.32"
+
+    //Resteasy (provided by wildfly)
+    compileOnly group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: '3.15.6.Final'
+
+    //jersey server(JAX-RS)
+    implementation group: 'org.glassfish.jersey.core', name: 'jersey-server', version: "3.1.7"
+
+    //eclipseLink
+    implementation group: 'org.eclipse.persistence', name: 'eclipselink', version: "4.0.4"
+}
+
+
+
+apply plugin: 'war'
+war {
+    archiveBaseName="jpacursortest"
+    destinationDirectory = file("$rootDir/compose/JpaCursorTest/WildFly/deployments");
+
+    doLast {
+        def dodeployFile = file("${war.destinationDirectory.get()}/${war.archiveFileName.get()}.dodeploy")
+        dodeployFile.text = ""
+    }
+}
+

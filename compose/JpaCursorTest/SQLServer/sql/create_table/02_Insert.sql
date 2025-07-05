@@ -1,0 +1,21 @@
+DECLARE @p_NumOfRows BIGINT
+SELECT @p_NumOfRows=10000000; 
+
+WITH Base AS ( 
+  SELECT 1 AS n    
+  UNION ALL    
+  SELECT n+1 FROM Base WHERE n < CEILING(SQRT(@p_NumOfRows)) 
+), 
+Expand AS ( 
+  SELECT 1 AS c FROM Base AS b1, Base AS b2 
+), 
+Nums AS ( 
+  SELECT ROW_NUMBER() OVER(ORDER BY c) AS n FROM Expand 
+)
+
+INSERT INTO TEST_TABLE
+SELECT NEWID(),  'NAME' + RIGHT('00000000' + CONVERT(NVARCHAR, n), 8) 
+FROM Nums WHERE n <= @p_NumOfRows
+
+
+OPTION (MaxRecursion 0);

@@ -1,0 +1,66 @@
+services:
+  front:
+    container_name: jpa-cursor-test-front
+    image: node:23.1.0-slim
+    working_dir: /usr/src/app/jpa-cursor-test
+    ports:
+      - 5173:5173
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - type: bind
+        source: ./Front/jpa-cursor-test
+        target: /usr/src/app/jpa-cursor-test
+      - type: volume
+        source: node_modules
+        target: /usr/src/app/jpa-cursor-test/node_modules
+    entrypoint: sh -c "yarn install && yarn dev"
+
+  app:
+    container_name: jpa-cursor-test-wf
+    build:
+      context: WildFly
+      dockerfile: Dockerfile
+      args:
+        - HEAP_SIZE=4
+        - WF_MANAGEMENT_USER=${WF_MANAGEMENT_USER}
+        - WF_MANAGEMENT_PASSWORD=${WF_MANAGEMENT_PASSWORD}
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - type: bind
+        source: ./WildFly/deployments
+        target: /mnt/deployments
+    ports:
+      - 8080:8080
+      - 8787:8787
+      - 9990:9990
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: "TEST db 1433 ${MSSQL_DBNAME} sa ${MSSQL_SA_PASSWORD}"
+
+  db:
+    container_name: jpa-cursor-test-db
+    build:
+      context: SQLServer
+      dockerfile: Dockerfile
+    environment:
+      DB_NAME: ${MSSQL_DBNAME}
+      TZ: Asia/Tokyo
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_LCID: 1041
+      MSSQL_COLLATION: Japanese_CI_AS
+    volumes:
+      - type: bind
+        source: ./SQLServer/sql
+        target: /usr/config/initdb.d/sql
+      - type: volume
+        source: db-volume
+        target: /var/opt/mssql
+    ports:
+      - 1833:1433
+
+volumes:
+  node_modules:
+  db-volume:
