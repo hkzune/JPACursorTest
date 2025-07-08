@@ -7,7 +7,7 @@
 
 このリポジトリは、以下の記事で紹介したサンプルプロジェクトです。  
 
-記事リンク（仮）: [https://example.com](https://example.com)
+[【JavaEE】大量データを扱うJPA、どうにかしたくてカーソルを試してみた話](https://qiita.com/zune/items/873d6683f997cd04146e)
 
 ---
 
