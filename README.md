@@ -25,7 +25,7 @@ cd compose/JpaCursorTest
 
 <br>
 
-2. 次のコマンドを実行してサーバー群を起動します：
+2. 次のコマンドを実行してコンテナ群を起動します：
 
 ```bash
 docker compose up
